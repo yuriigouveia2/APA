@@ -52,6 +52,7 @@ def radix_sort(lista):
     lista = counting_sort(lista, maximo, lambda a: digito(a, d+1))
   return lista
 
+
 ################################################
 ################### EXECUÇÃO ###################
 ################################################
