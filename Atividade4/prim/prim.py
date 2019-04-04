@@ -20,7 +20,7 @@ def carregaMatriz():
     # quebra a string de entrada em uma lista de numeros
     for i in range(0, int(numNos)-1):
         listaCarregada[i] = entrada[i+1].split()
-
+    
     aux = []
     for i in range(0, int(numNos)):
         aux.clear()
@@ -33,8 +33,7 @@ def carregaMatriz():
                 aux.append([n+2, int(listaCarregada[i][j])])
                 n = n+1
         listaAux[i] = aux.copy()
-
-
+    
     # completa listas (forma matriz quadrada)
     for i in range(0, int(numNos)):
         for j in range(0, len(listaAux[i])):
@@ -43,10 +42,10 @@ def carregaMatriz():
             if (listaAux[i][j][0] - 1) < i:
                 continue
             listaAux[(listaAux[i][j][0] - 1)].append([i+1, listaAux[i][j][1]])
-
+    
     for i in range(0, len(listaAux)):
         listaAux[i] = sorted(listaAux[i], key=itemgetter(0)).copy()
-
+    
     # cria matriz auxiliar
     for i in range(0, len(listaAux)):
         aux.clear()
@@ -59,7 +58,7 @@ def carregaMatriz():
 ################################################
 
 def prim(numNos, grafo):
-
+    print(grafo)
     numNos = int(numNos)
     distancias = [sys.maxsize] * numNos    # array de distâncias do nó x para o nó origem
     arvore = [None] * numNos               # array que vai guardar a árvore de espelhamento mínimo (mst)
