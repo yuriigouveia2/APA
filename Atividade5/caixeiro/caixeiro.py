@@ -40,7 +40,6 @@ def caixeiro():
                 solucao = novaSolucao
                 caminho.append(solucao[1][0])
                 break
-    caminho.append(1)
    
     
     print("Valor: ", custo)
@@ -54,6 +53,7 @@ def minimo(k, a):
 
     valores = []
     minimos = []
+
     for j in a:
         set_a = copy.deepcopy(list(a))
         set_a.remove(j)
