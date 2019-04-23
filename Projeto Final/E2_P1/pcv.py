@@ -50,11 +50,13 @@ def vizinho_mais_proximo(pontoPartida, numNos, matriz, visitados, caminho):
 def construcao_gulosa(numNos, matriz):
     caminho = [0]
     visitados = [False]*numNos
-    minimos = []*numNos
     noInicial = 0
     visitados[noInicial] = True
 
-    return vizinho_mais_proximo(noInicial, numNos, matriz, visitados, caminho)
+    visitados, caminho = vizinho_mais_proximo(noInicial, numNos, matriz, visitados, caminho)
+    caminho.append(noInicial)
+
+    return visitados, caminho
 
 ################################################
 ################### EXECUÇÃO ###################
