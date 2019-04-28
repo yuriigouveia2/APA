@@ -92,7 +92,7 @@ def vizinhanca(numNos, matrizAux, caminho, visitados, distancia):
                     melhorado = True
                     return caminho, distancia, melhorCaminho, novaDistancia #Retorna primeira melhora
 
-    return caminho, distancia, melhorCaminho, novaDistancia
+   # return caminho, distancia, melhorCaminho, novaDistancia
 
 
 
