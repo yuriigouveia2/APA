@@ -104,4 +104,5 @@ n, matriz = carregaMatriz()
 
 visitados, caminho, distancia = construcao_gulosa(n, matriz)
 antigo, dist, novo, novaDist = vizinhanca(n, matriz, caminho, visitados, distancia)
-print(dist, novaDist)
+print("A distância da construção inicial foi: " + dist)
+print("A distância da otimização foi: " + novaDist)
