@@ -27,7 +27,7 @@ def criaMatrizComp():
  
     for partida in range(0, numNos):
         for chegada in range(0, numNos):
-            matrizAux[partida][chegada] = list(map(int, distEuclidiana(vetorCoord[partida], vetorCoord[chegada])))
+            matrizAux[partida][chegada] = distEuclidiana(vetorCoord[partida], vetorCoord[chegada])
     
     return numNos, matrizAux.copy()
 
@@ -110,35 +110,54 @@ def custo(matriz, caminho):
 def vizinhanca(numNos, matrizAux, caminho, visitados, distancia):
 
     melhorCaminho = caminho
-    melhorado = True
-    while(melhorado):
-        melhorado = False
+    melhorado = 0
+    
+    for i in range(1, len(caminho)-2):
+        for j in range(i+1, len(caminho)):
+            if j-i == 1:              # Não muda nada 
+                continue
+            novoCaminho = caminho[:]
+            novoCaminho[i:j] = caminho[j-1:i-1:-1]  # 2-opt swap
+            novaDistancia = custo(np.array(matriz), np.array(novoCaminho))
+            if novaDistancia < distancia:      # Verifica se o novo caminho é melhor que o antigo
+                melhorCaminho = novoCaminho
+                melhorado = 0
+                return caminho, distancia, melhorCaminho, novaDistancia #Retorna primeira melhora
+            else:
+                melhorado += 1
+            if melhorado > 500:
+                return caminho, distancia, melhorCaminho, novaDistancia #Retorna solução sem melhora
 
-        for i in range(1, len(caminho)-2):
-            for j in range(i+1, len(caminho)):
-                if j-i == 1:              # Não muda nada 
-                    continue
-                novoCaminho = caminho[:]
-                novoCaminho[i:j] = caminho[j-1:i-1:-1]  # 2-opt swap
-                novaDistancia = custo(np.array(matriz), np.array(novoCaminho))
-                if novaDistancia < distancia:      # Verifica se o novo caminho é melhor que o antigo
-                    melhorCaminho = novoCaminho
-                    melhorado = True
-                    return caminho, distancia, melhorCaminho, novaDistancia #Retorna primeira melhora
 
-   # return caminho, distancia, melhorCaminho, novaDistancia
 
+################################################
+################## TIPO DE ARQUIVO #############
+################################################
+def tipoArquivo():
+    tipo = input('Tipos de arquivo:\n1 - Competição\t2 - Teste \nQual o tipo de aquivo de leitura? ')
+
+    if tipo == '1':
+        n, matriz = criaMatrizComp()
+    elif tipo == '2':
+        n, matriz = carregaMatrizTeste()
+    else:
+        tipoArquivo()
+
+    return n, matriz.copy()
 
 
 ################################################
 ################### EXECUÇÃO ###################
 ################################################
-# n, matriz = carregaMatrizTeste()
+
+n, matriz = tipoArquivo()
+sys.setrecursionlimit(n*n)
+
+visitados, caminho, distancia = construcao_gulosa(n, matriz)
+antigo, dist, novo, novaDist = vizinhanca(n, matriz, caminho, visitados, distancia)
+print("A distância da construção inicial foi: " + str(dist))
+print("A distância da otimização foi: " + str(novaDist))
 
 
-# visitados, caminho, distancia = construcao_gulosa(n, matriz)
-# antigo, dist, novo, novaDist = vizinhanca(n, matriz, caminho, visitados, distancia)
-# print("A distância da construção inicial foi: " + dist)
-# print("A distância da otimização foi: " + novaDist)
 
-n, m = criaMatrizComp()
+
