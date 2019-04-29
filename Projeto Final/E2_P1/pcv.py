@@ -1,10 +1,44 @@
 import sys
 import numpy as np
+import math as mt
 
 ################################################
 ############# LEITURA DO ARQUIVO ###############
 ################################################
-def carregaMatriz():
+def criaMatrizComp():
+    arquivo = None
+    while arquivo is None:
+        arquivoEntrada = input("Digite o nome do arquivo com a extensão: ")
+        try:
+            arquivo = open(arquivoEntrada, 'r')
+        except FileNotFoundError:
+            print("Arquivo não encontrado!")
+
+    entrada = arquivo.readlines()
+
+    numNos = int(entrada[1].split(':')[1])
+    vetorCoord = [[0]]*(numNos)
+    matrizAux = [[0]*(numNos)]*(numNos)
+
+    # quebra a string de entrada em uma lista de numeros
+    for i in range(0, numNos):
+        vetorCoord[i] = entrada[i+3].split()[1:]
+        vetorCoord[i] = list(map(float, vetorCoord[i]))
+ 
+    for partida in range(0, numNos):
+        for chegada in range(0, numNos):
+            matrizAux[partida][chegada] = list(map(int, distEuclidiana(vetorCoord[partida], vetorCoord[chegada])))
+    
+    return numNos, matrizAux.copy()
+
+##################################################
+
+def distEuclidiana(inicial, final):
+    return round(mt.sqrt((mt.pow((final[0] - inicial[0]), 2) + mt.pow((final[1] - inicial[1]), 2))))
+
+##################################################
+
+def carregaMatrizTeste():
     arquivo = None
     while arquivo is None:
         arquivoEntrada = input("Digite o nome do arquivo com a extensão: ")
@@ -99,10 +133,12 @@ def vizinhanca(numNos, matrizAux, caminho, visitados, distancia):
 ################################################
 ################### EXECUÇÃO ###################
 ################################################
-n, matriz = carregaMatriz()
+# n, matriz = carregaMatrizTeste()
 
 
-visitados, caminho, distancia = construcao_gulosa(n, matriz)
-antigo, dist, novo, novaDist = vizinhanca(n, matriz, caminho, visitados, distancia)
-print("A distância da construção inicial foi: " + dist)
-print("A distância da otimização foi: " + novaDist)
+# visitados, caminho, distancia = construcao_gulosa(n, matriz)
+# antigo, dist, novo, novaDist = vizinhanca(n, matriz, caminho, visitados, distancia)
+# print("A distância da construção inicial foi: " + dist)
+# print("A distância da otimização foi: " + novaDist)
+
+n, m = criaMatrizComp()
