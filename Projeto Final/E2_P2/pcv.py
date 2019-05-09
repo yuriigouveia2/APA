@@ -130,7 +130,7 @@ def custo(matriz, caminho):
 def custo_de_mudanca(matriz, n1, n2, n3, n4):               # Cálculo de custo de benefício ao trocar posições
     return matriz[n1][n3] + matriz[n2][n4] - matriz[n1][n2] - matriz[n3][n4]
 
-def two_opt(caminho, matriz):
+def busca_local(caminho, matriz):
     melhorCaminho = caminho
     improved = True
     while improved:
@@ -143,20 +143,6 @@ def two_opt(caminho, matriz):
                     improved = True
         caminho = melhorCaminho
     return melhorCaminho.copy()
-
-def buscaLocal(noPartida, numNos, matriz, caminho, distancia):  # melhor vizinhança
-    
-    caminhoAux = caminho.copy()
-    for noChegada in range(0, numNos):                    # Loop de escolha do vizinho mais próximo
-        temp = caminhoAux[noPartida]                      # Faz as trocas para verificar o melhor vizinho
-        caminhoAux[noPartida] = caminhoAux[noChegada]
-        caminhoAux[noChegada] = temp
-        novaDist = custo(matriz, caminhoAux)
-
-        if novaDist < distancia:                          # Se nova distância for menor que a original, fazer troca de vizinho
-            return caminhoAux.copy(), novaDist 
-
-    return None, None
 
 ############# SOLUÇÃO ALEATORIA ################
 def gera_solucao_aleatoria(numNos, matriz):
@@ -183,10 +169,11 @@ def metaheuristica(numNos, matriz):
 
     print("A distância da construção inicial foi: " + str(distancia))
     for noPartida in range(0, numNos):
+        
         caminhoAleatorio, distanciaAleatoria = gera_solucao_aleatoria(numNos, matriz)
-        #novoCaminho, novaDist = buscaLocal(noPartida, numNos, matriz, caminhoAleatorio, distanciaAleatoria)
-        novoCaminho = two_opt(caminhoAleatorio, matriz)
+        novoCaminho = busca_local(caminhoAleatorio, matriz)
         novaDist = custo(matriz, novoCaminho)
+
         if novoCaminho != None and novaDist < distancia and criterioParada < 5000: 
             caminho = novoCaminho.copy()
             distancia = novaDist
