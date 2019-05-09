@@ -127,6 +127,23 @@ def custo(matriz, caminho):
 ################################################
 ############ ESCOLHE MELHOR VIZINHO ############
 ################################################
+def custo_de_mudanca(matriz, n1, n2, n3, n4):               # Cálculo de custo de benefício ao trocar posições
+    return matriz[n1][n3] + matriz[n2][n4] - matriz[n1][n2] - matriz[n3][n4]
+
+def two_opt(caminho, matriz):
+    melhorCaminho = caminho
+    improved = True
+    while improved:
+        improved = False
+        for i in range(1, len(caminho) - 2):
+            for j in range(i + 1, len(caminho)):
+                if j - i == 1: continue
+                if custo_de_mudanca(matriz, melhorCaminho[i - 1], melhorCaminho[i], melhorCaminho[j - 1], melhorCaminho[j]) < 0:
+                    melhorCaminho[i:j] = melhorCaminho[j - 1:i - 1:-1]
+                    improved = True
+        caminho = melhorCaminho
+    return melhorCaminho.copy()
+
 def buscaLocal(noPartida, numNos, matriz, caminho, distancia):  # melhor vizinhança
     
     caminhoAux = caminho.copy()
@@ -167,14 +184,16 @@ def metaheuristica(numNos, matriz):
     print("A distância da construção inicial foi: " + str(distancia))
     for noPartida in range(0, numNos):
         caminhoAleatorio, distanciaAleatoria = gera_solucao_aleatoria(numNos, matriz)
-        novoCaminho, novaDist = buscaLocal(noPartida, numNos, matriz, caminhoAleatorio, distanciaAleatoria)
-        if novoCaminho != None and novaDist < distancia and criterioParada < 1000000: 
+        #novoCaminho, novaDist = buscaLocal(noPartida, numNos, matriz, caminhoAleatorio, distanciaAleatoria)
+        novoCaminho = two_opt(caminhoAleatorio, matriz)
+        novaDist = custo(matriz, novoCaminho)
+        if novoCaminho != None and novaDist < distancia and criterioParada < 5000: 
             caminho = novoCaminho.copy()
             distancia = novaDist
+        elif criterioParada == 5000:
             return caminho.copy(), distancia
         else:
             criterioParada += 1   
-        
     return caminho.copy(), distancia
 ################################################
 ################### EXECUÇÃO ###################

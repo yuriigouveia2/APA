@@ -1,7 +1,23 @@
 import sys
 import numpy as np
 import math as mt
+import time
 
+################################################
+################## TIPO DE ARQUIVO #############
+################################################
+def tipoArquivo():
+    tipo = input('Tipos de arquivo:\n1 - Competição\t2 - Teste \nQual o tipo de aquivo de leitura? ')
+
+    if tipo == '1':
+        n, matriz = criaMatrizComp()
+    elif tipo == '2':
+        n, matriz = carregaMatrizTeste()
+    else:
+        tipoArquivo()
+
+    return n, matriz.copy()
+    
 ################################################
 ############# LEITURA DO ARQUIVO ###############
 ################################################
@@ -111,7 +127,7 @@ def vizinhanca(numNos, matrizAux, caminho, visitados, distancia):
 
     melhorCaminho = caminho
     melhorado = 0
-    
+
     for i in range(1, len(caminho)-2):
         for j in range(i+1, len(caminho)):
             if j-i == 1:              # Não muda nada 
@@ -125,31 +141,14 @@ def vizinhanca(numNos, matrizAux, caminho, visitados, distancia):
                 return caminho, distancia, melhorCaminho, novaDistancia #Retorna primeira melhora
             else:
                 melhorado += 1
-            if melhorado > 500:
+            if melhorado > 5000:
                 return caminho, distancia, melhorCaminho, novaDistancia #Retorna solução sem melhora
-
-
-
-################################################
-################## TIPO DE ARQUIVO #############
-################################################
-def tipoArquivo():
-    tipo = input('Tipos de arquivo:\n1 - Competição\t2 - Teste \nQual o tipo de aquivo de leitura? ')
-
-    if tipo == '1':
-        n, matriz = criaMatrizComp()
-    elif tipo == '2':
-        n, matriz = carregaMatrizTeste()
-    else:
-        tipoArquivo()
-
-    return n, matriz.copy()
-
 
 ################################################
 ################### EXECUÇÃO ###################
 ################################################
 
+tInicio = time.time()
 n, matriz = tipoArquivo()
 sys.setrecursionlimit(n*n)
 
@@ -157,6 +156,9 @@ visitados, caminho, distancia = construcao_gulosa(n, matriz)
 antigo, dist, novo, novaDist = vizinhanca(n, matriz, caminho, visitados, distancia)
 print("A distância da construção inicial foi: " + str(dist))
 print("A distância da otimização foi: " + str(novaDist))
+tFim = time.time()
+
+print("O tempo de duração foi: " + str(tFim - tInicio) + " segundos")
 
 
 
