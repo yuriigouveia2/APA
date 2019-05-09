@@ -113,6 +113,7 @@ def construcao_gulosa(numNos, matriz):
     distancia += matriz[caminho[len(caminho) - 1]][noInicial]
     caminho.append(noInicial)
 
+    print(caminho)
     tFinal = time.time()
     print("O tempo de duração de criação foi: " + str(tFinal - tInicial) + " segundos")
     return visitados, caminho, distancia
@@ -173,7 +174,7 @@ def metaheuristica(numNos, matriz):
 
     print("A distância da construção inicial foi: " + str(distancia))
 
-    while criterioParada < numNos:
+    while criterioParada < 50:
         caminhoAleatorio, distanciaAleatoria = gera_solucao_aleatoria(numNos, matriz)
         novoCaminho = busca_local(caminhoAleatorio, matriz)
         novaDist = custo(matriz, novoCaminho)
@@ -184,6 +185,7 @@ def metaheuristica(numNos, matriz):
             return caminho.copy(), distancia
         else: 
             criterioParada += 1   
+        print(str(criterioParada))
     return caminho.copy(), distancia
 ################################################
 ################### EXECUÇÃO ###################
