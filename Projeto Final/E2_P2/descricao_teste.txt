@@ -1,4 +1,4 @@
-Como interpretar os arquivos:
+Como interpretar os arquivos: 
 
 -) O número de vértices pode ser encontrado no campo DIMENSION
 -) A matriz de distâncias pode ser encontrada no campo EDGE_WEIGHT_SECTION
