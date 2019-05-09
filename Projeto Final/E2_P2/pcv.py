@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import math as mt
 import time
-from random import randint as rnd
+import random
 
 ################################################
 ################## TIPO DE ARQUIVO #############
@@ -35,18 +35,18 @@ def criaMatrizComp():
 
     numNos = int(entrada[1].split(':')[1])
     vetorCoord = [[0]]*(numNos)
-    matrizAux = [[0]*(numNos)]*(numNos)
+    matrizAux = np.zeros((numNos,numNos)) 
 
     # quebra a string de entrada em uma lista de numeros
     for i in range(0, numNos):
         vetorCoord[i] = entrada[i+3].split()[1:]
         vetorCoord[i] = list(map(float, vetorCoord[i]))
- 
+     
     for partida in range(0, numNos):
         for chegada in range(0, numNos):
             matrizAux[partida][chegada] = distEuclidiana(vetorCoord[partida], vetorCoord[chegada])
     
-    return numNos, matrizAux.copy()
+    return numNos, matrizAux.tolist().copy()
 
 ##################################################
 
@@ -152,17 +152,15 @@ def busca_local(caminho, matriz):
 def gera_solucao_aleatoria(numNos, matriz):
 
     adicionado = [False]*numNos
-    caminhoAleatorio = [None]*numNos
-    posicao = rnd(0, numNos-1)
-    primeiro = posicao
+    caminhoAleatorio = []
 
-    for i in range(0, numNos):
-        while adicionado[posicao]:
-            posicao = rnd(0, numNos-1)
+    while len(caminhoAleatorio) != numNos:
+        r = random.randint(0, numNos)
+        if r not in caminhoAleatorio:
+            caminhoAleatorio.append(r)
 
-        caminhoAleatorio[i] = posicao
-        adicionado[posicao] = True
-    caminhoAleatorio[numNos-1] = primeiro
+    caminhoAleatorio = random.sample(range(0,numNos), numNos)
+    caminhoAleatorio.append(caminhoAleatorio[0])
     distanciaAleatoria = custo(matriz, caminhoAleatorio)
 
     return caminhoAleatorio.copy(), distanciaAleatoria
@@ -191,7 +189,7 @@ def metaheuristica(numNos, matriz):
 ################### EXECUÇÃO ###################
 ################################################
 n, matriz = tipoArquivo()
-sys.setrecursionlimit(n*n)
+sys.setrecursionlimit(1500*1500)
 
 tInicio = time.time()
 
