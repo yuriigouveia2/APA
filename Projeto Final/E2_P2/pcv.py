@@ -2,7 +2,7 @@ import sys
 import numpy as np
 import math as mt
 import time
-from random import *
+from random import randint as rnd
 
 ################################################
 ################## TIPO DE ARQUIVO #############
@@ -114,8 +114,7 @@ def construcao_gulosa(numNos, matriz):
     caminho.append(noInicial)
 
     tFinal = time.time()
-    print("O tempo de duração da construção foi: " + str(tFinal - tInicial) + " segundos")
-
+    print("O tempo de duração de criação foi: " + str(tFinal - tInicial) + " segundos")
     return visitados, caminho, distancia
 
 ################################################
@@ -130,59 +129,43 @@ def custo(matriz, caminho):
 ################################################
 ################ METAHEURISTICA ################
 ################################################
-################ SELF ANNEALING ################
+############ ESCOLHE MELHOR VIZINHO ############
 ################################################
-def simulated_anealing(temperatura, caminhoAtual, matriz, numNos):
-    caminhoMinimo = caminhoAtual
-    caminhoAdjacente = []*numNos
+def custo_de_mudanca(matriz, n1, n2, n3, n4):               # Cálculo de custo de benefício ao trocar posições
+    return matriz[n1][n3] + matriz[n2][n4] - matriz[n1][n2] - matriz[n3][n4]
 
-    while temperatura > TEMPERATURA_MINIMA:
-        #print(str(custo(matriz, caminhoAtual)) + " | " + str(round(temperatura,2)))
-        caminhoAdjacente = obter_caminho_adjacente(caminhoAtual, numNos)
+def busca_local(caminho, matriz):
+    melhorCaminho = caminho
+    improved = True
+    while improved:
+        improved = False
+        for i in range(1, len(caminho) - 2):
+            for j in range(i + 1, len(caminho)):
+                if j - i == 1: continue
+                if custo_de_mudanca(matriz, melhorCaminho[i - 1], melhorCaminho[i], melhorCaminho[j - 1], melhorCaminho[j]) < 0:
+                    melhorCaminho[i:j] = melhorCaminho[j - 1:i - 1:-1]
+                    improved = True
+        caminho = melhorCaminho
+    return melhorCaminho.copy()
 
-        distanciaAtual = custo(matriz, caminhoAtual)            # Calculo dos custos das distancias
-        distanciaMinima = custo(matriz, caminhoMinimo)
-        distanciaAdjacente = custo(matriz, caminhoAdjacente)
+############# SOLUÇÃO ALEATORIA ################
+def gera_solucao_aleatoria(numNos, matriz):
 
-        if distanciaAtual < distanciaMinima:        # Se a distancia do caminho atual for menor que a minima, ...            
-            caminhoMinimo = caminhoAtual                                        # ... a minima como sendo a atual
-        
-        if aceita_rota(distanciaAtual, distanciaAdjacente, temperatura):
-            caminhoAtual = caminhoAdjacente
+    adicionado = [False]*numNos
+    caminhoAleatorio = [None]*numNos
+    posicao = rnd(0, numNos-1)
+    primeiro = posicao
 
-        temperatura *= 1-TAXA_ESFRIAMENTO                                     # Formula de decrescimo da temperatura
+    for i in range(0, numNos):
+        while adicionado[posicao]:
+            posicao = rnd(0, numNos-1)
 
-    return caminhoMinimo
-################################################
+        caminhoAleatorio[i] = posicao
+        adicionado[posicao] = True
+    caminhoAleatorio[numNos-1] = primeiro
+    distanciaAleatoria = custo(matriz, caminhoAleatorio)
 
-def aceita_rota(distanciaAtual, distanciaAdjacente, temperatura):
-    rotaAceita = False
-    probabilidadeAceitacao = 1
-
-    if distanciaAdjacente >= distanciaAtual:
-        probabilidadeAceitacao = np.exp((-1)*(distanciaAdjacente - distanciaAtual) / temperatura)           # Formula probabilistica da aceitaçao
-
-    numAleatorio = random()                                 # Numero aleatorio entre 0 e 1
-
-    if probabilidadeAceitacao >= numAleatorio:              # Caso a probabilidade de aceitaçao for maior que o numero aleatorio, a rota é aceita
-        rotaAceita = True
-
-    return rotaAceita
-
-################################################
-def obter_caminho_adjacente(caminho, numNos):
-    i = j = 0                           # Condição inicial
-    while i == j:                       # Gera indices aleatorios
-        i = randint(0, numNos)
-        j = randint(0, numNos)
-
-    cidadeA = caminho[i]                # Retorna as cidades letativa aos indices
-    cidadeB = caminho[j]
-
-    caminho[i] = cidadeB                # Troca elas de posição
-    caminho[j] = cidadeA
-
-    return caminho.copy()
+    return caminhoAleatorio.copy(), distanciaAleatoria
 
 
 ############# METAHEURISTICA ###################
@@ -192,26 +175,32 @@ def metaheuristica(numNos, matriz):
 
     print("A distância da construção inicial foi: " + str(distancia))
 
-    caminho = simulated_anealing(TEMPERATURA_INICIAL, caminho, matriz, numNos)
-    distancia = custo(matriz, caminho)
- 
+    while criterioParada < numNos:
+        caminhoAleatorio, distanciaAleatoria = gera_solucao_aleatoria(numNos, matriz)
+        novoCaminho = busca_local(caminhoAleatorio, matriz)
+        novaDist = custo(matriz, novoCaminho)
+
+        if novoCaminho != None and novaDist < distancia: 
+            caminho = novoCaminho.copy()
+            distancia = novaDist
+            return caminho.copy(), distancia
+        else: 
+            criterioParada += 1   
     return caminho.copy(), distancia
 ################################################
 ################### EXECUÇÃO ###################
 ################################################
-TAXA_ESFRIAMENTO = 0.005
-TEMPERATURA_INICIAL = 999
-TEMPERATURA_MINIMA = 0.99
-
 n, matriz = tipoArquivo()
 sys.setrecursionlimit(n*n)
 
 tInicio = time.time()
+
 novoCaminho, novaDist = metaheuristica(n, matriz)
 
+print("A distância da otimização foi: " + str(novoCaminho))
 print("A distância da otimização foi: " + str(novaDist))
 tFim = time.time()
-print("O tempo de duração da otimização foi: " + str(tFim - tInicio) + " segundos")
+print("O tempo de duração de otimização foi: " + str(tFim - tInicio) + " segundos")
 
 
 
